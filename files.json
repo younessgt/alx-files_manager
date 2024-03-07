@@ -1,0 +1,12 @@
+[
+    { "filename": "file1.txt", "size": 100 },
+    { "filename": "file2.txt", "size": 200 },
+    { "filename": "file3.txt", "size": 150 },
+    { "filename": "file4.txt", "size": 30 },
+    { "filename": "file5.txt", "size": 10 },
+    { "filename": "file6.txt", "size": 2300 },
+    { "filename": "file7.txt", "size": 1530 },
+    { "filename": "file8.txt", "size": 3300 },
+    { "filename": "file9.txt", "size": 1003 },
+    { "filename": "file10.txt", "size": 2100 }
+]

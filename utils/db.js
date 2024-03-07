@@ -27,6 +27,32 @@ class DBClient {
     const count = await fileCollection.countDocuments();
     return count;
   }
+
+  async getUserByEmail(emailToComapre) {
+    const userCollection = this.client.db(database).collection('users');
+    try {
+      const user = await userCollection.findOne({ email: emailToComapre });
+      return user;
+    } catch (err) {
+      console.log('Error Found: ', err);
+      throw err;
+    }
+  }
+
+  async setUser(email, password) {
+    const userCollection = this.client.db(database).collection('users');
+    try {
+      const returnedUser = await userCollection.insertOne({
+        email,
+        password,
+      });
+
+      return { id: returnedUser.insertedId, email };
+    } catch (err) {
+      console.log('Inserting failed');
+      throw err;
+    }
+  }
 }
 
 const dbClient = new DBClient();
