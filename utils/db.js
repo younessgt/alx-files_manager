@@ -34,7 +34,7 @@ class DBClient {
       const user = await userCollection.findOne({ email: emailToComapre });
       return user;
     } catch (err) {
-      console.log('Error Found: ', err);
+      console.log('Error User Found: ', err);
       throw err;
     }
   }
@@ -45,7 +45,7 @@ class DBClient {
       const user = await userCollection.findOne({ _id: ObjectId(id) });
       return user;
     } catch (err) {
-      console.log('Error Found: ', err);
+      console.log('Error User Found: ', err);
       throw err;
     }
   }
@@ -61,6 +61,28 @@ class DBClient {
       return { id: returnedUser.insertedId, email };
     } catch (err) {
       console.log('Inserting failed');
+      throw err;
+    }
+  }
+
+  async getFileById(id) {
+    const fileCollection = this.client.db(database).collection('files');
+    try {
+      const file = await fileCollection.findOne({ _id: ObjectId(id) });
+      return file;
+    } catch (err) {
+      console.log('Error File Found: ', err);
+      throw err;
+    }
+  }
+
+  async setFile(newfile) {
+    const fileCollection = this.client.db(database).collection('files');
+    try {
+      const file = await fileCollection.insertOne(newfile);
+      return file;
+    } catch (err) {
+      console.log('Error File Found: ', err);
       throw err;
     }
   }
