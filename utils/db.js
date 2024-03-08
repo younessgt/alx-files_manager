@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const host = process.env.DB_HOST || 'localhost';
 const port = process.env.DB_PORT || 27017;
@@ -32,6 +32,17 @@ class DBClient {
     const userCollection = this.client.db(database).collection('users');
     try {
       const user = await userCollection.findOne({ email: emailToComapre });
+      return user;
+    } catch (err) {
+      console.log('Error Found: ', err);
+      throw err;
+    }
+  }
+
+  async getUserById(id) {
+    const userCollection = this.client.db(database).collection('users');
+    try {
+      const user = await userCollection.findOne({ _id: ObjectId(id) });
       return user;
     } catch (err) {
       console.log('Error Found: ', err);

@@ -22,6 +22,10 @@ class RedisClient {
   }
 
   async set(key, value, duration) {
+    if (value === undefined) {
+      console.error('Value cannot be undefined');
+      return;
+    }
     this.client.set(key, value, 'EX', duration);
   }
 
