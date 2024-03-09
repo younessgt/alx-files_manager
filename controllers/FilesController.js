@@ -1,4 +1,4 @@
-#!/bin/usr/node
+/* eslint-disable */
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import Bull from 'bull';
@@ -180,20 +180,20 @@ class FilesController {
     }
 
     const files = dbClient.fileCollection().aggregate(aggregateData);
-    const documents = await files.toArray();
-    if (documents.length === 0) {
-      resp.status(200).send([]);
-      return;
-    }
-    const document = documents[0];
-    resp.status(200).json([{
-      id: document._id,
-      userId: document.userId,
-      name: document.name,
-      type: document.type,
-      isPublic: document.isPublic,
-      parentId: document.parentId,
-    }]);
+ 
+    const filesList = [];
+    await files.forEach((file) => {
+      const item = {
+        id: file._id,
+        userId: file.userId,
+        name: file.name,
+        type: file.type,
+        isPublic: file.isPublic,
+        parentId: file.parentId,
+      };
+      filesList.push(item);
+    });
+    return resp.send(filesList);
   }
 
   static async putPublish(req, resp) {
@@ -275,6 +275,7 @@ class FilesController {
       console.log('Error found: ', err);
     }
   }
+
   static async getFile(req, resp) {
     const { 'x-token': xToken } = req.headers;
     // if (!xToken) {
