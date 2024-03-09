@@ -252,7 +252,22 @@ class FilesController {
       console.log('Error found: ', err);
     }
   }
+  static async getFile(req, resp) {
+    const { 'x-token': xToken } = req.headers;
+    // if (!xToken) {
+    //   resp.status(401).json({ error: 'Unauthorized' });
+    //   return;
+    // }
+    const userId = await redisClient.get(`auth_${xToken}`);
 
+    // if (!userId) {
+    //   resp.status(401).json({ error: 'Unauthorized' });
+    //   return;
+    // }
+
+    const user = await dbClient.getUserById(userId);
+
+    const { id: newId } = req.params;
 }
 
 module.exports = FilesController;
