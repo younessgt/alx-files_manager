@@ -182,7 +182,7 @@ class FilesController {
     const files = dbClient.fileCollection().aggregate(aggregateData);
     const documents = await files.toArray();
     const { _id: id, ...rest } = documents[0];
-    resp.status(200).json({ id, ...rest });
+    resp.status(200).json([{ id, ...rest }]);
   }
 
   static async putPublish(req, resp) {
