@@ -1,3 +1,4 @@
+#!/bin/usr/node
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import Bull from 'bull';
@@ -180,8 +181,8 @@ class FilesController {
 
     const files = dbClient.fileCollection().aggregate(aggregateData);
     const documents = await files.toArray();
-
-    resp.status(200).json(documents);
+    const { _id: id, ...rest } = documents[0];
+    resp.status(200).json({ id, ...rest });
   }
 
   static async putPublish(req, resp) {
