@@ -138,6 +138,11 @@ class FilesController {
       return;
     }
     const user = await dbClient.getUserById(userId);
+    
+    if (!user) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    } 
 
     const { id: newId } = req.params;
 
@@ -147,10 +152,13 @@ class FilesController {
       resp.status(404).json({ error: 'Not found' });
       return;
     }
-    const { _id: id, ...rest } = file;
     resp.status(200).json({
-      id,
-      ...rest,
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId, 
     });
   }
 
