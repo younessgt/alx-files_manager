@@ -1,11 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
+import Bull from 'bull';
+import { ObjectId } from 'mongodb';
 import { promisify } from 'util';
+import mime from 'mime-types';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
 class FilesController {
   static async postUpload(req, resp) {
+    const fileQueue = new Bull('fileQueue');
     const { 'x-token': xToken } = req.headers;
     if (!xToken) {
       resp.status(401).json({ error: 'Unauthorized' });
@@ -104,6 +108,12 @@ class FilesController {
     };
 
     const file = await dbClient.setFile(fileDataWithPath);
+    if (fileType === 'image') {
+      fileQueue.add({
+        userId: user._id,
+        fileId: file.insertedId,
+      });
+    }
     resp.status(201).json({
       name: fileName,
       type: fileType,
@@ -173,6 +183,7 @@ class FilesController {
 
     resp.status(200).json(documents);
   }
+
   static async putPublish(req, resp) {
     const { 'x-token': xToken } = req.headers;
     if (!xToken) {
@@ -268,6 +279,38 @@ class FilesController {
     const user = await dbClient.getUserById(userId);
 
     const { id: newId } = req.params;
+    const size = req.query.size || 0;
+    // end
+
+    const file = await dbClient.getFileById(newId);
+
+    if (!file) {
+      resp.status(404).json({ error: 'Not found' });
+      return;
+    }
+
+    if (
+      file.isPublic === false
+      && (!xToken || !userId || file.userId.toString() !== user._id.toString())
+    ) {
+      resp.status(404).json({ error: 'Not found' });
+      return;
+    }
+
+    if (file.type === 'folder') {
+      resp.status(400).json({ error: "A folder doesn't have content" });
+      return;
+    }
+    const newFilePath = size === 0 ? file.localPath : `${file.localPath}_${size}`;
+    try {
+      const fileData = fs.readFileSync(newFilePath);
+      const mimeType = mime.lookup(file.name);
+      resp.setHeader('Content-Type', mimeType);
+      resp.send(fileData);
+    } catch (err) {
+      resp.status(404).json({ error: 'Not found' });
+    }
+  }
 }
 
 module.exports = FilesController;
