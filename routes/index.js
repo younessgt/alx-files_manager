@@ -35,4 +35,13 @@ router.get('/users/me', (req, resp) => {
 router.post('/files', (req, resp) => {
   FilesController.postUpload(req, resp);
 });
+
+router.get('/files', (req, resp) => {
+  FilesController.getIndex(req, resp);
+});
+
+router.get('/files/:id', (req, resp) => {
+  FilesController.getShow(req, resp);
+});
+
 module.exports = router;

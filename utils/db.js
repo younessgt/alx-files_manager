@@ -86,6 +86,10 @@ class DBClient {
       throw err;
     }
   }
+
+  fileCollection() {
+    return this.client.db(database).collection('files');
+  }
 }
 
 const dbClient = new DBClient();
