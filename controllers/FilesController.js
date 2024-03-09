@@ -186,7 +186,7 @@ class FilesController {
     let aggregateData;
     if (parentId !== 0) {
       aggregateData = [
-        { $match: { $and: [{parentId}] } },
+        { $match: { parentId } },
         { $skip: page * 20 },
         { $limit: 20 },
       ];
