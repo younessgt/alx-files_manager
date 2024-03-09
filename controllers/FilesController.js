@@ -185,8 +185,15 @@ class FilesController {
       resp.status(200).send([]);
       return;
     }
-    const { _id: id, ...rest } = documents[0];
-    resp.status(200).json([{ id, ...rest }]);
+    const document = documents[0];
+    resp.status(200).json([{
+      id: document._id,
+      userId: document.userId,
+      name: document.name,
+      type: document.type,
+      isPublic: document.isPublic,
+      parentId: document.parentId,
+    }]);
   }
 
   static async putPublish(req, resp) {
