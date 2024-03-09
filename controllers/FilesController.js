@@ -152,7 +152,7 @@ class FilesController {
       resp.status(404).json({ error: 'Not found' });
       return;
     }
-    resp.status(200).json({
+    resp.json({
       id: file._id,
       userId: file.userId,
       name: file.name,
@@ -186,7 +186,7 @@ class FilesController {
     let aggregateData;
     if (parentId !== 0) {
       aggregateData = [
-        { $match: { parentId } },
+        { $match: { $and: [{parentId}] } },
         { $skip: page * 20 },
         { $limit: 20 },
       ];
