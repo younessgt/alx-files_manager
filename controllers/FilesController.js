@@ -181,6 +181,10 @@ class FilesController {
 
     const files = dbClient.fileCollection().aggregate(aggregateData);
     const documents = await files.toArray();
+    if (documents.length === 0) {
+      resp.status(200).send([]);
+      return;
+    }
     const { _id: id, ...rest } = documents[0];
     resp.status(200).json([{ id, ...rest }]);
   }
