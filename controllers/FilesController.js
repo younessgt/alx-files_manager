@@ -173,6 +173,86 @@ class FilesController {
 
     resp.status(200).json(documents);
   }
+  static async putPublish(req, resp) {
+    const { 'x-token': xToken } = req.headers;
+    if (!xToken) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const userId = await redisClient.get(`auth_${xToken}`);
+
+    if (!userId) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const user = await dbClient.getUserById(userId);
+
+    const { id: newId } = req.params;
+
+    const file = await dbClient.getFileById(newId);
+
+    if (!file || file.userId.toString() !== user._id.toString()) {
+      resp.status(404).json({ error: 'Not found' });
+      return;
+    }
+
+    const query = { _id: ObjectId(newId) };
+    const update = { $set: { isPublic: true } };
+
+    try {
+      await dbClient.fileCollection().updateOne(query, update);
+      const updatedFile = await dbClient.getFileById(newId);
+      const { _id: id, ...rest } = updatedFile;
+      resp.status(200).json({
+        id,
+        ...rest,
+      });
+    } catch (err) {
+      console.log('Error found: ', err);
+    }
+  }
+
+  static async putUnpublish(req, resp) {
+    const { 'x-token': xToken } = req.headers;
+    if (!xToken) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const userId = await redisClient.get(`auth_${xToken}`);
+
+    if (!userId) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const user = await dbClient.getUserById(userId);
+
+    const { id: newId } = req.params;
+
+    const file = await dbClient.getFileById(newId);
+
+    if (!file || file.userId.toString() !== user._id.toString()) {
+      resp.status(404).json({ error: 'Not found' });
+      return;
+    }
+
+    const query = { _id: ObjectId(newId) };
+    const update = { $set: { isPublic: false } };
+
+    try {
+      await dbClient.fileCollection().updateOne(query, update);
+      const updatedFile = await dbClient.getFileById(newId);
+      const { _id: id, ...rest } = updatedFile;
+      resp.status(200).json({
+        id,
+        ...rest,
+      });
+    } catch (err) {
+      console.log('Error found: ', err);
+    }
+  }
+
 }
 
 module.exports = FilesController;

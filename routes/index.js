@@ -44,4 +44,12 @@ router.get('/files/:id', (req, resp) => {
   FilesController.getShow(req, resp);
 });
 
+router.put('/files/:id/publish', (req, resp) => {
+  FilesController.putPublish(req, resp);
+});
+
+router.put('/files/:id/unpublish', (req, resp) => {
+  FilesController.putUnpublish(req, resp);
+});
+
 module.exports = router;
