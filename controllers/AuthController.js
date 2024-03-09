@@ -17,6 +17,10 @@ class AuthController {
     const credentials = Buffer.from(decode64Key, 'base64').toString('utf-8');
     const [email, password] = credentials.split(':');
     // console.log(`${email}  ${password}`);
+    if (!email || !password) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const hashpass = sha1(password);
     const user = await dbClient.getUserByEmail(email);
     if (!user || user.password !== hashpass) {
@@ -43,7 +47,7 @@ class AuthController {
     }
 
     await redisClient.del(`auth_${xToken}`);
-    resp.status(200).json();
+    resp.status(200).send();
   }
 }
 
