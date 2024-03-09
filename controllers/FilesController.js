@@ -166,6 +166,13 @@ class FilesController {
       resp.status(401).json({ error: 'Unauthorized' });
       return;
     }
+
+   const user = await dbClient.getUserById(userId); 
+    if (!user) {
+      resp.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
     const { parentId = 0, page = 0 } = req.query;
 
     let aggregateData;
@@ -179,8 +186,8 @@ class FilesController {
       aggregateData = [{ $skip: page * 20 }, { $limit: 20 }];
     }
 
-    const files = dbClient.fileCollection().aggregate(aggregateData);
- 
+    const files = await dbClient.fileCollection().aggregate(aggregateData);
+
     const filesList = [];
     await files.forEach((file) => {
       const item = {
@@ -278,22 +285,12 @@ class FilesController {
 
   static async getFile(req, resp) {
     const { 'x-token': xToken } = req.headers;
-    // if (!xToken) {
-    //   resp.status(401).json({ error: 'Unauthorized' });
-    //   return;
-    // }
     const userId = await redisClient.get(`auth_${xToken}`);
-
-    // if (!userId) {
-    //   resp.status(401).json({ error: 'Unauthorized' });
-    //   return;
-    // }
 
     const user = await dbClient.getUserById(userId);
 
     const { id: newId } = req.params;
     const size = req.query.size || 0;
-    // end
 
     const file = await dbClient.getFileById(newId);
 
