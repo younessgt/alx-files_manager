@@ -179,10 +179,10 @@ class FilesController {
       return;
     }
 
-    const { parentId = 0, page = 0 } = req.query;
+    const { parentId = '0', page = 0 } = req.query;
 
     let aggregateData;
-    if (parentId !== 0) {
+    if (parentId !== '0') {
       aggregateData = [
         { $match: { parentId } },
         { $skip: page * 20 },
