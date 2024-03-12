@@ -86,8 +86,6 @@ class FilesController {
 
     const binaryData = Buffer.from(fileData, 'base64');
 
-    console.log(binaryData);
-
     const mkdirPromise = promisify(fs.mkdir);
     const writeFilePromise = promisify(fs.writeFile);
 
